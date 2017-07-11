@@ -1,0 +1,458 @@
+{% extends "base.html" %}
+
+{% block body %}
+
+<script src="{{ url_for('static', filename='js/three.min.js') }}"></script>
+<!-- <script src="{{ url_for('static', filename='js/TrackballControls.js') }}"></script> -->
+<script src="{{ url_for('static', filename='js/OrbitControls.js') }}"></script>
+<script src="{{ url_for('static', filename='js/curves/NURBSCurve.js') }}"></script>
+<script src="{{ url_for('static', filename='js/curves/NURBSUtils.js') }}"></script>
+
+<div class="text-offset">
+    <h3>Hello, {{ session['username'] }}:</h3>
+    <p>MOVE mouse and press left button: rotate, middle button: zoom, right button: pan</p>
+</div>
+
+{% if session['uploaded_filename'] != None %}
+<div class="text-offset">   
+    <div class="spoiler">
+        <label>
+            <input type="checkbox"/>
+            <span class="btn btn-success">Geometry coordinates for <strong>{{ session['uploaded_filename'] }}</strong>:</span>
+            <div class="spoiler-text">
+                <p>Summary cutting length: {{diction['sum_length']}}</p>
+                <hr>
+                <p>Lines: <br>{{diction['line']}}</p>
+                <p>Circles: <br>{{diction['circle']}}</p>
+                <p>2D polylines: <br>{{diction['lwpolyline']}}</p>
+                <p>Arcs: <br>{{diction['arc']}}</p>
+                <p>Ellipses: <br>{{diction['ellipse']}}</p>
+                <p>Splines: <br>{{diction['spline']}}</p>
+            </div>
+        </label>
+    </div>
+</div>
+
+    <script>
+        var scene = new THREE.Scene();
+        var camera = new THREE.PerspectiveCamera( 45, window.innerWidth / window.innerHeight, 0.1, 5000 );
+        camera.position.set( 0, 0, 200 );
+        // camera.position.z = 5;
+
+        
+        var renderer = new THREE.WebGLRenderer();
+        renderer.setClearColor( 0x222222 );
+        renderer.setPixelRatio( window.devicePixelRatio );
+        renderer.setSize( window.innerWidth, window.innerHeight );
+        document.body.appendChild( renderer.domElement );
+ 
+                
+        var controls = new THREE.OrbitControls( camera, renderer.domElement );
+        // controls = new THREE.TrackballControls( camera, renderer.domElement );
+        // controls.rotateSpeed = 3.0;
+        // controls.zoomSpeed = 1.2;
+        // controls.panSpeed = 0.8;
+
+        // controls.noZoom = false;
+        // controls.noPan = false;
+
+        // controls.staticMoving = true;
+        // controls.dynamicDampingFactor = 0.3;
+
+        // // controls.keys = [ 65, 83, 68 ];
+
+        // // controls.addEventListener( 'change', render );
+        // controls.minDistance = 5;
+        // controls.maxDistance = 200;
+
+        ////////////////////////
+        // geometry goes here //
+        ////////////////////////
+
+        // axes
+        scene.add( new THREE.AxisHelper( 500 ) );
+
+        // // cube // x, y, z, segments along x, along y, along z
+        // var geometry = new THREE.BoxGeometry( 3, 3, 0.1, 1, 1, 1 );
+        // var material = new THREE.MeshBasicMaterial( { color: 0x5CB85C } );
+        // var cube = new THREE.Mesh( geometry, material );
+        // scene.add( cube );
+
+        // // cylinder // radiusAtTop, radiusAtBottom, height, segmentsAroundRadius, segmentsAlongHeight,
+        // // prism can be made this way by modyfying num of segments 
+        // var geometry = new THREE.CylinderGeometry( 10, 10, 0.2, 20, 1 );
+        // var material = new THREE.MeshBasicMaterial( { color: 0xEDC613 } );      
+        // var cylinder = new THREE.Mesh( geometry, material );
+        // cylinder.position.set(0, 0, 0);
+        // scene.add( cylinder );
+
+
+        {% if lines %}
+            {% for line in lines %}
+                var lineGeometry = new THREE.Geometry();
+                var vertArray = lineGeometry.vertices;
+                vertArray.push( new THREE.Vector3( {{ line['start'][0] }}, {{ line['start'][1] }}, {{ line['start'][2] }} ), new THREE.Vector3( {{ line['end'][0] }}, {{ line['end'][1] }}, {{ line['end'][2] }} ) );
+                lineGeometry.computeLineDistances();
+                var lineMaterial = new THREE.LineBasicMaterial( { color: 0xff0000} );
+                var line = new THREE.Line( lineGeometry, lineMaterial );
+                scene.add(line);
+            {% endfor %}
+        {% endif %}
+
+		
+        // CircleGeometry(radius, segments, thetaStart, thetaLength)
+        // radius — Radius of the circle, default = 50.
+        // segments — Number of segments (triangles), minimum = 3, default = 8.
+        // thetaStart — Start angle for first segment, default = 0 (three o'clock position).
+        // thetaLength — The central angle, often called theta, of the circular sector. The default is 2*Pi, which makes for a complete circle. 
+        {% if circles %}
+            {% for circle in circles %}
+
+                var circleGeometry = new THREE.CircleGeometry( {{ circle['radius'] }}, 20 );
+                var material = new THREE.MeshBasicMaterial( { color: 0xff0000, wireframe: true, transparent: true } );
+                var circle = new THREE.Mesh( circleGeometry, material );
+                circle.position.set( {{ circle['center'][0] }}, {{ circle['center'][1] }}, {{ circle['center'][2] }} )
+                scene.add( circle );
+
+            {% endfor %}
+        {% endif %}
+
+
+        // aX – The X center of the ellipse
+        // aY – The Y center of the ellipse
+        // xRadius – The radius of the ellipse in the x direction
+        // yRadius – The radius of the ellipse in the y direction
+        // aStartAngle – The start angle of the curve in radians starting from the middle right side
+        // aEndAngle – The end angle of the curve in radians starting from the middle right side
+        // aClockwise – Whether the ellipse is clockwise
+        // aRotation – The rotation angle of the ellipse in radians, counterclockwise from the positive X axis (optional)
+        // Note: When going clockwise it's best to set the start angle to (Math.PI * 2) and then work towards lower numbers.
+        // problem: then you use startparam and endparam to draw segment of ellipse - full ellipses doesn't drawn - possibly
+        // because 2pi (6.28...) what provided by dxf grabber is going farther then 0 degree - maybe rounded 2pi (to 3 num after dot or so)
+        // will solve this 
+        {% if ellipses %}
+            {% for ellipse in ellipses %}
+                 
+                var curve = new THREE.EllipseCurve(
+                            {{ ellipse['center'][0] }}, {{ ellipse['center'][1] }},            // ax, aY 
+                            {{ ellipse['xRadius'] }}, {{ ellipse['yRadius'] }},           // xRadius, yRadius
+                            {{ ellipse['startparam'] }}, {{ ellipse['endparam'] }},  // aStartAngle, aEndAngle  // 0, 2 * Math.PI,
+                            false,            // aClockwise
+                            {{ ellipse['aRotation'] }}                 // aRotation 
+                            );
+
+                var path = new THREE.Path( curve.getPoints( 50 ) );
+                var geometry = path.createPointsGeometry( 50 );
+                var material = new THREE.LineBasicMaterial( { color : 0xff0000 } );
+
+                var ellipse = new THREE.Line( geometry, material );
+                scene.add( ellipse );
+
+
+            {% endfor %}
+        {% endif %}
+
+        
+        // arc as partial ellipse
+        {% if arcs %}
+            {% for arc in arcs %}
+                 
+                var curve = new THREE.EllipseCurve(
+                            {{ arc['center'][0] }}, {{ arc['center'][1] }},            // ax, aY 
+                            {{ arc['radius'] }}, {{ arc['radius'] }},           // xRadius = yRadius
+                            {{ arc['startparam'] }}, {{ arc['endparam'] }},  // aStartAngle, aEndAngle  
+                            false,            // aClockwise
+                            0                 // aRotation 
+                            );
+
+                var path = new THREE.Path( curve.getPoints( 50 ) );
+                var geometry = path.createPointsGeometry( 50 );
+                var material = new THREE.LineBasicMaterial( { color : 0xff0000 } );
+
+                var arc = new THREE.Line( geometry, material );
+                scene.add( arc );
+
+
+            {% endfor %}
+        {% endif %}
+
+
+        // splines made on NURBS. 
+        {% if splines %}
+            {% for spline in splines %} 
+
+                var nurbsControlPoints = [];
+                var nurbsKnots = {{ spline['knots'] }};
+                var nurbsDegree = {{ spline['degree'] }};
+
+
+                {% for iPoint in spline['controlpoints'] %}
+                    
+                    nurbsControlPoints.push(new THREE.Vector4( {{ iPoint[0] }}, {{ iPoint[1] }}, {{ iPoint[2] }}, 1 )); 
+
+                {% endfor %}
+
+
+                var nurbsCurve = new THREE.NURBSCurve(nurbsDegree, nurbsKnots, nurbsControlPoints);
+
+                var nurbsGeometry = new THREE.Geometry();
+                nurbsGeometry.vertices = nurbsCurve.getPoints(50);
+
+                var nurbsMaterial = new THREE.LineBasicMaterial( { color : 0xff0000 } );
+
+                var nurbsLine = new THREE.Line( nurbsGeometry, nurbsMaterial );
+
+                scene.add( nurbsLine );
+
+            {% endfor %}
+        {% endif %}
+
+
+        {% if lwpolylines %}
+            {% for pline in lwpolylines %}
+                {% for segment in pline['segments'] %}
+                
+                    {% if segment['line'] %}
+                        var lineGeometry = new THREE.Geometry();
+                        var vertArray = lineGeometry.vertices;
+                        vertArray.push( new THREE.Vector3( {{ segment['start'][0] }}, {{ segment['start'][1] }}, 0 ), new THREE.Vector3( {{ segment['end'][0] }}, {{ segment['end'][1] }}, 0 ) );
+                        lineGeometry.computeLineDistances();
+                        var lineMaterial = new THREE.LineBasicMaterial( { color: 0xff0000} );
+                        var line = new THREE.Line( lineGeometry, lineMaterial );
+                        scene.add(line);
+                    {% else %}  
+
+                        // var curve = new THREE.EllipseCurve(
+                        //             -15, -10,            // ax, aY 
+                        //             5, 5,           // xRadius, yRadius
+                        //             0, 2 * Math.PI,  // aStartAngle, aEndAngle  // 0, 2 * Math.PI,
+                        //             false,            // aClockwise
+                        //             0                 // aRotation 
+                        //             );
+
+                        // var path = new THREE.Path( curve.getPoints( 50 ) );
+                        // var geometry = path.createPointsGeometry( 50 );
+                        // var material = new THREE.LineBasicMaterial( { color : 0xff0000 } );
+
+                        // var ellipse = new THREE.Line( geometry, material );
+                        // // scene.add( ellipse );
+                        
+                    {% endif %}
+
+                {% endfor %}
+            {% endfor %}
+        {% endif %}
+
+
+
+      
+
+
+        // var pts = [];
+        // //outer boundary
+        // pts.push(new THREE.Vector2(0.000000,5.000000));
+        // pts.push(new THREE.Vector2(-3.011257,3.461539));
+        // pts.push(new THREE.Vector2(-5.825516,5.262664));
+        // pts.push(new THREE.Vector2(-6.951220,2.560976));
+        // pts.push(new THREE.Vector2(-5.600375,0.028143));
+        // pts.push(new THREE.Vector2(-8.020638,-2.842402));
+        // pts.push(new THREE.Vector2(-8.977486,-5.093809));
+        // pts.push(new THREE.Vector2(-6.894934,-5.431520));
+        // pts.push(new THREE.Vector2(-3.574109,-3.236398));
+        // pts.push(new THREE.Vector2(-0.984991,-4.418386));
+        // pts.push(new THREE.Vector2(1.941839,-5.431520));
+        // pts.push(new THREE.Vector2(3.123827,-3.461539));
+        // pts.push(new THREE.Vector2(6.275797,-1.378987));
+        // pts.push(new THREE.Vector2(7.626642,-2.166979));
+        // pts.push(new THREE.Vector2(9.427768,-1.153846));
+        // pts.push(new THREE.Vector2(7.176360,1.266417));
+        // pts.push(new THREE.Vector2(4.024390,0.309568));
+        // pts.push(new THREE.Vector2(1.435272,-1.435272));
+        // pts.push(new THREE.Vector2(-1.998124,-2.166979));
+        // pts.push(new THREE.Vector2(-3.461539,-1.210131));
+        // pts.push(new THREE.Vector2(-2.673546,0.534709));
+        // pts.push(new THREE.Vector2(-0.478424,-0.084428));
+        // pts.push(new THREE.Vector2(2.504690,1.210131));
+        // pts.push(new THREE.Vector2(6.332083,3.011257));
+        // pts.push(new THREE.Vector2(7.570356,6.444653));
+        // pts.push(new THREE.Vector2(5.544090,8.020638));
+        // pts.push(new THREE.Vector2(0.309568,7.457786));
+     
+        // // create a shape with the outer boundary
+        // var shape = new THREE.Shape(pts);
+     
+        // pts = [];
+        // // define a hole
+        // pts.push(new THREE.Vector2(2.054409,5.431520));
+        // pts.push(new THREE.Vector2(4.868668,4.699812));
+        // pts.push(new THREE.Vector2(1.941839,2.842402));
+        
+        // // add the hole into shape.holes
+        // shape.holes.push(new THREE.Shape(pts));
+     
+        // pts = []
+        // // define another hole
+        // pts.push(new THREE.Vector2(-1.829268,1.435272));
+        // pts.push(new THREE.Vector2(-4.868668,2.166979));
+        // pts.push(new THREE.Vector2(-0.309568,3.067542));
+        
+        // // also add it into shape.holes
+        // shape.holes.push(new THREE.Shape(pts));
+     
+        // // here we create the geometry with ExtrudeGeometry class, the amount parameter is the thickness.
+        // var polygonGeometry = new THREE.ExtrudeGeometry(shape, { amount: 0.5, bevelEnabled: false });
+     
+        // // create a polygon mesh with two kind of materials, we will talk about the materials later
+        // polygon = THREE.SceneUtils.createMultiMaterialObject( 
+        //     polygonGeometry, 
+        //     [ 
+        //         new THREE.MeshLambertMaterial( { color: 0x00FF00 } ), 
+        //         new THREE.MeshBasicMaterial( { color: 0x000000, wireframe: true, transparent: true } ) 
+        //     ] );
+        
+        // // set the position of the polygon
+        // polygon.position.set(1.0, -1.0, 0.0 );
+     
+        // // don't forget to add it into the scene
+        // scene.add( polygon );
+
+
+        // center lines
+        // var lineGeometry = new THREE.Geometry();
+        // var vertArray = lineGeometry.vertices;
+        // vertArray.push( new THREE.Vector3(0, 0, 0), new THREE.Vector3(0, 500, 0) );
+        // lineGeometry.computeLineDistances();
+        // var lineMaterial = new THREE.LineDashedMaterial( { color: 0xEDC613, dashSize: 1, gapSize: 0.2 } );
+        // var line = new THREE.Line( lineGeometry, lineMaterial );
+        // scene.add(line);
+
+        // var lineGeometry = new THREE.Geometry();
+        // var vertArray = lineGeometry.vertices;
+        // vertArray.push( new THREE.Vector3(0, 0, 0), new THREE.Vector3(500, 0, 0) );
+        // lineGeometry.computeLineDistances();
+        // var lineMaterial = new THREE.LineDashedMaterial( { color: 0xEDC613, dashSize: 1, gapSize: 0.2 } );
+        // var line = new THREE.Line( lineGeometry, lineMaterial );
+        // scene.add(line);
+
+
+        // custom object with extrusion
+        // var starPoints = [];
+        
+        // starPoints.push( new THREE.Vector2 (   0,  50 ) );
+        // starPoints.push( new THREE.Vector2 (  10,  10 ) );
+        // starPoints.push( new THREE.Vector2 (  40,  10 ) );
+        // starPoints.push( new THREE.Vector2 (  20, -10 ) );
+        // starPoints.push( new THREE.Vector2 (  30, -50 ) );
+        // starPoints.push( new THREE.Vector2 (   0, -20 ) );
+        // starPoints.push( new THREE.Vector2 ( -30, -50 ) );
+        // starPoints.push( new THREE.Vector2 ( -20, -10 ) );
+        // starPoints.push( new THREE.Vector2 ( -40,  10 ) );
+        // starPoints.push( new THREE.Vector2 ( -10,  10 ) );
+        
+        // var starShape = new THREE.Shape( starPoints );
+
+        // var extrusionSettings = {
+        //     size: 30, height: 4, curveSegments: 3,
+        //     bevelThickness: 1, bevelSize: 2, bevelEnabled: false,
+        //     material: 0, extrudeMaterial: 1
+        // };
+        
+        // var starGeometry = new THREE.ExtrudeGeometry( starShape, extrusionSettings );
+        
+        // var materialFront = new THREE.MeshBasicMaterial( { color: 0xffff00 } );
+        // var materialSide = new THREE.MeshBasicMaterial( { color: 0xff8800 } );
+        // var materialArray = [ materialFront, materialSide ];
+        // var starMaterial = new THREE.MeshFaceMaterial(materialArray);
+        
+        // var star = new THREE.Mesh( starGeometry, starMaterial );
+        // star.position.set(0,50,0);
+        // scene.add(star);
+
+
+
+
+
+
+        // var customerPoints = [];
+   
+        // customerPoints.push( new THREE.Vector3 ( 0.0, 0.0, 0.0 ) );
+        // customerPoints.push( new THREE.Vector3 ( 0.0, 9.999999999999998, 0.0 ) );
+        // customerPoints.push( new THREE.Vector3 ( 9.999999999999998, 9.999999999999998, 0.0 ) );
+        // customerPoints.push( new THREE.Vector3 ( 9.999999999999998, 0.0, 0.0 ) );
+        // customerPoints.push( new THREE.Vector3 ( 0.0, 0.0, 0.0 ) );
+        
+        // var customerShape = new THREE.Shape( customerPoints );
+
+        // var extrusionSettings = {
+        //     amount: 3, // size: 3, height: 1, curveSegments: 3,
+        //     bevelThickness: 3, bevelSize: 2, bevelEnabled: false,
+        //     material: 0, extrudeMaterial: 1
+        // };
+        
+        // var customerGeometry = new THREE.ExtrudeGeometry( customerShape, extrusionSettings );
+        
+        // var materialFront = new THREE.MeshBasicMaterial( { color: 0xffff00 } );
+        // var materialSide = new THREE.MeshBasicMaterial( { color: 0xff8800 } );
+        // var materialArray = [ materialFront, materialSide ];
+        // var customerMaterial = new THREE.MeshFaceMaterial(materialArray);
+        
+        // var customer = new THREE.Mesh( customerGeometry, customerMaterial );
+        // customer.position.set(0,0,0);
+        // scene.add(customer);
+        
+        // // add a wireframe to model
+        // var wireframeTexture = new THREE.MeshBasicMaterial( { color: 0x000000, wireframe: true, transparent: true } ); 
+        // var star = new THREE.Mesh( customerGeometry, wireframeTexture );
+        // customer.position.set(0,0,0);
+        // scene.add(customer);
+
+        
+
+        var render = function () {
+
+            requestAnimationFrame( render );
+
+            controls.update();
+            // cube.rotation.x += 0;
+            // cube.rotation.y += 0.01;
+
+            renderer.render(scene, camera);
+        };
+
+        render();
+    </script>
+
+{% else %}
+
+    <script>
+        var scene = new THREE.Scene();
+        var camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 );
+        camera.position.set( 0, 0, 200 );
+        camera.position.z = 5;
+     
+        var renderer = new THREE.WebGLRenderer();
+        renderer.setClearColor( 0x222222 );
+        renderer.setPixelRatio( window.devicePixelRatio );
+        renderer.setSize( window.innerWidth, window.innerHeight );
+        document.body.appendChild( renderer.domElement );
+
+        var geometry = new THREE.BoxGeometry( 1, 1, 1 );
+        var material = new THREE.MeshBasicMaterial( { color: 0x00ff00 } );
+        var cube = new THREE.Mesh( geometry, material );
+        scene.add( cube );
+
+        var render = function () {
+            requestAnimationFrame( render );
+
+            cube.rotation.x += 0.1;
+            cube.rotation.y += 0.1;
+
+            renderer.render(scene, camera);
+        };
+
+        render();
+    </script>
+
+{% endif %}
+
+{% endblock %}

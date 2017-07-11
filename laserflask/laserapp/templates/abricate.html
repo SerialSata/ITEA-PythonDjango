@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+
+  <meta charset="utf-8">
+  <title>ABRICATE</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link href="{{ url_for('static', filename='css/main.css') }}" rel="stylesheet">
+  <link rel="shortcut icon" href="{{ url_for('static', filename='abricate_files/favicon.ico') }}">
+  
+  <style>
+   /* table, th, td { border: 1px solid black; }  *//*border: 1px solid black; border-collapse: collapse; */
+
+    th, td { padding: 20px; text-align: left; }
+  </style>
+
+  <style type="text/css">
+    .linkedinlogo {
+    display: block;
+    text-align: center;
+    }
+    .linkedinlogo:hover, .linkedinlogo:focus, .linkedinlogo:active {
+    background: url("{{ url_for('static', filename='abricate_files/linkedinlogo.png') }}") no-repeat 50% 50%;
+    }
+    .linkedinlogo:hover img, .linkedinlogo:focus img, .linkedinlogo:active img  {
+    background: transparent;
+    visibility: hidden;
+    }
+
+    .backpattern {
+    z-index: 1;
+    min-height: 400px;
+    border-color: #000000;
+    padding-bottom: 0px;
+    background: transparent url("{{ url_for('static', filename='abricate_files/pattern_shapes.jpg') }}") repeat left top;
+    }
+    .layer1 {
+    z-index: 2;
+    }
+    img {
+    max-width: 100%;
+    }
+  </style>
+
+</head>
+
+<header>
+  <nav class="navbar navbar-default navbar-fixed-top" style="background: rgba(255, 255, 255, 0.9); ">
+    
+    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+    </button>
+
+      <div class = "collapse navbar-collapse" id="myNavbar">
+
+          <div class="navbar-brand" style="margin-left: 3%;"> <!-- style="margin-right: 10px; margin-left: 50px; margin-top: 15px; margin-bottom: 15px;" -->
+          <img alt="Logo" src="{{ url_for('static', filename='abricate_files/abricate-logotype.png') }}" height="30">
+      </div>
+
+      <ul class="nav navbar-nav navbar-right" style="margin-right: 3%;"> <!--  style="margin-right: 50px; margin-left: 10px; margin-top: 15px; margin-bottom: 15px;"> -->
+          <li><a href="#home">HOME</a></li>
+          <li><a href="#designer">DESIGNER</a></li>
+          <li><a href="#fabricator">FABRICATOR</a></li>
+          <li><a href="#team">TEAM</a></li>
+          <li><a href="#contact">CONTACT</a></li>
+      </ul>
+
+    </div>
+
+  </nav>
+</header>
+
+<body>
+  <div>
+    <a name="home"></a>
+  </div>
+
+  <div class="container-fluid text-center" style="padding-top: 50px; text-align:center;">
+    <img src="{{ url_for('static', filename='abricate_files/abricate-banner-w--color-v2.png') }}" class="img-responsive center-block" alt="Main picture" width="90%">
+    <a href="#designer">
+<!--       <button type="button" class="btn btn-maincenter" style="position:absolute; left:50%; top:50%; font-size:20px; margin-left:-70px; ">How you make it!</button> -->
+    </a>
+  </div>
+
+  <div class="container-fluid" style="background: #000000; text-align:center;">
+    <p style="color:#ffffff; font-size:35px; padding-top: 5%; padding-bottom: 5%; ">DESIGNS FABRICATED WITH A CLICK</p> 
+  </div>
+
+  <div class="container-fluid" style="height: 25px; background: #252525; text-align:center; ">
+    <p>&nbsp;</p>
+    <a name="designer"></a>
+  </div>
+
+
+  <!-- Designer block -->
+  <div class="container-fluid" style="text-align:center;">
+    <a name="designer"></a>
+    <p style="color:#008a97; font-size:35px; padding-top: 5%; padding-bottom: 5%; ">MANUFACTURE YOUR DESIGNS SIMPLY.</p> 
+  </div>
+
+  <div class="container-fluid"> 
+   <div class="row" style="margin-right: 5%; margin-left: 5%; margin-bottom: 5%;">
+
+      <div class="col-xs-12 col-sm-4 col-md-4 col-lg-4">
+        <div class="media">
+          <div class="media-left media-top">
+            <img class="media-object" src="{{ url_for('static', filename='abricate_files/control.png') }}" alt="control wheel">
+          </div>
+          <div class="media-body">
+            <h4 class="media-heading" style="color:#008a97; font-size:15px; ">CONTROL THE FINAL RESULT</h4>
+            <p style="font-size:12px;"><br />What you see is what you get! 1000 words or not, seeing a picture of what your design will look like in the end allows you to make the adjustments you need before it's produced.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-xs-12 col-sm-4 col-md-4 col-lg-4">
+        <div class="media">
+          <div class="media-left media-top">
+            <img class="media-object" src="{{ url_for('static', filename='abricate_files/iterate.png') }}" alt="iterate">
+          </div>
+          <div class="media-body">
+            <h4 class="media-heading" style="color:#008a97; font-size:15px; ">ITERATE TO CREATE...</h4>
+            <p style="font-size:12px;"><br />You no longer have to wait to innovate your design. Our virtual design visualization feature allows you to iterate your file immediately, before it's produced, saving time and money.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-xs-12 col-sm-4 col-md-4 col-lg-4">
+        <div class="media">
+          <div class="media-left media-top">
+            <img class="media-object" src="{{ url_for('static', filename='abricate_files/seed.png') }}" alt="seed">
+          </div>
+          <div class="media-body">
+            <h4 class="media-heading" style="color:#008a97; font-size:15px; ">BRING YOUR DESIGN TO LIFE</h4>
+            <p style="font-size:12px;"><br />There is always more than one way to fabricate your design to life. Let us help you understand and select the right process that meets your ultimate goals.</p>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+
+  <!-- Fabricator block -->
+  <div class="container-fluid" style="background: #E3E3E3; text-align:center;">
+    <a name="fabricator"></a>
+    <p style="color:#CD2027; font-size:35px; padding-top: 5%; padding-bottom: 5%; ">FABRICATE MORE WITH LESS LOGISTICS.</p> 
+  </div>
+
+  <div class="container-fluid" style="background: #E3E3E3; ">
+   <div class="row" style=" margin-right: 5%; margin-left: 5%; margin-bottom: 5%;">
+
+      <div class="col-xs-12 col-sm-4 col-md-4 col-lg-4">
+        <div class="media">
+          <div class="media-left media-top">
+            <img class="media-object" src="{{ url_for('static', filename='abricate_files/garentee.png') }}" alt="garentee">
+          </div>
+          <div class="media-body">
+            <h4 class="media-heading" style="color:#CD2027; font-size:15px; ">NO BID - JOB PAYMENT GUARANTEE</h4>
+            <p style="font-size:12px;"><br />Every new job offers  unique challenges and risks. Fabricating an individuals design is always difficult. What we offer is simple - files ready to run on your machine, and guaranteed payment on every job you download and produce.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-xs-12 col-sm-4 col-md-4 col-lg-4">
+        <div class="media">
+          <div class="media-left media-top">
+            <img class="media-object" src="{{ url_for('static', filename='abricate_files/increase.png') }}" alt="increase">
+          </div>
+          <div class="media-body">
+            <h4 class="media-heading" style="color:#CD2027; font-size:15px; ">INCREASE MARKET ACCESS</h4>
+            <p style="font-size:12px;"><br />Access the power of "the network effect", without all the BS. The opportunity is larger than simple supply and demand. We aggregate the jobs, you choose the ones that fit your sweet spot.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-xs-12 col-sm-4 col-md-4 col-lg-4">
+        <div class="media">
+          <div class="media-left media-top">
+            <img class="media-object" src="{{ url_for('static', filename='abricate_files/onehat.png') }}" alt="onehat">
+          </div>
+          <div class="media-body">
+            <h4 class="media-heading" style="color:#CD2027; font-size:15px; ">WEAR LESS HATS</h4>
+            <p style="font-size:12px;"><br />Focus on what you do best, and leave the logistics to us. We offer scalable solutions from simple run ready jobs, to integrated costing and inventory management platforms.</p>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="container-fluid" style="height: 25px; background: #E3E3E3; text-align:center; ">
+    <p>&nbsp;</p>
+  </div>
+
+
+  <!-- Team block -->
+  <div class="container-fluid" style="background: #252525; text-align:center; ">
+    <a name="team"></a>
+    <p style="color:#ffffff; font-size:35px; margin-top: 5%;">MEET THE TEAM</p> 
+  </div>
+
+  <div class="container-fluid">
+    <div class="row" style="background: #252525;">
+
+      <div class="col-md-4 col-md-offset-4">
+        <div class="thumbnail">
+          <a href="https://www.linkedin.com/in/theitsystem" >
+            <img src="{{ url_for('static', filename='abricate_files/marc_roth_2x.jpg') }}" alt="Marc">
+          </a>
+          <div class="caption">
+            <h4>MARC ROTH<br /><strong>HARD CORE FABRICATOR</strong></h4>
+            <p>Marc earned his fabrication chops out of necessity.  After leaving a successful yet unfulfilling career as a software engineer, Marc found himself homeless despite his skills. It forced him to adapt,  brought him to Tech Shop, and introduced him to The Maker Community. Offering the fabrication skills he acquired as a talented laser operator to others led to personal and financial success as the founder of SF Laser. Abricate was born from the frustration Marc encountered operating his own small business. He understood how to engineer a solution that solved his own pain points, and saw it's potential to solve a greater problem, unlocking independent fabricators potential to meet unmet demand.</p>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+<!--   <div class="container-fluid" style="height: 10%; background: #ffffff; text-align:center; ">
+    <a name="contact"></a>
+    <p>&nbsp;</p>
+  </div> -->
+
+  <div class="container-fluid backpattern" >
+    <div class="row">
+    <a name="contact"></a>
+      <div class="col-md-3 col-md-offset-1 layer1">
+          <p style="color:#ffffff; font-size:35px; margin-top: 40px">CONTACT US<br /></p>
+          <p style="color:#7F7F7F; font-size:16px;">WE WANT TO BUILD THE RIGHT SOLUTION.</p>
+          <p style="color:#ffffff; font-size:16px;"><br />Every conversation helps us understand what we need to build. If you take the time to give us your thoughts, we'll take the time to reply.</p>
+      </div>
+      <div class="col-md-5 col-md-offset-3 layer1">
+        <form style="margin-top: 40px; margin-right: 100px">
+        <div class="form-group layer1">
+          <input type="name" class="form-control-custom" id="InputName1" placeholder="NAME?">
+        </div>
+
+        <div class="form-group layer1">
+          <input type="email" class="form-control-custom" id="InputEmail1" placeholder="EMAIL?">
+        </div>
+
+        <div class="form-group layer1">
+          <input type="tel" class="form-control-custom" id="InputEmail1" placeholder="PHONE NUMBER?">
+        </div>
+
+        <div class="form-group layer1">
+          <textarea class="form-control-custom" rows="5" placeholder="THE MESSAGE YOU WANT TO SEND US!"></textarea>
+        </div>
+
+        <button type="submit" class="btn btn-default layer1" style="margin-bottom: 40px;">SUBMIT MESSAGE</button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <script src="//code.jquery.com/jquery-1.12.1.min.js"></script>
+  <script type="text/javascript" src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>
+
+</body>
+
+<footer class="page-footer">  
+  <div class="container-fluid" style="background: #111111;">
+    <div class="row">
+      <div class="col-md-2 col-md-offset-1">
+        <address style="color:#ffffff; font-size:16px; margin-top: 30px; margin-bottom: 30px;">
+        1960 Mandela Parkway<br>
+        Oakland, CA 94607
+        </address>
+      </div>
+      <div class="col-md-2 col-md-offset-5 footer-copyright">
+        <p style="color:#ffffff; font-size:16px; padding-top: 30px;">
+        Abricate Inc. | Copyright 2015
+        </p>
+      </div>
+    </div>
+  </div>
+  <div class="container-fluid" style="height: 20px; background: #ffffff;">
+    <p>&nbsp;</p>
+  </div>
+</footer>
+
+</html>

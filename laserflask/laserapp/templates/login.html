@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% block body %}
+
+<div class="upload-page text-offset">
+  <h2>Please Login:</h2>
+  <br>
+  <form action = "" class = "form-inline" method = "post">
+    <input type = "text" class = "form-control" placeholder = "Username" name = "username" value = "{{ request.form.username }}">
+    <input type = "password" class = "form-control" placeholder = "Password" name = "password" value = "{{ request.form.password }}">
+    <input class = "btn btn-default" type = "submit" value = "Login">
+  </form>
+</div>
+
+<div>
+  <p>&nbsp;<br>&nbsp;<br>&nbsp;<br>&nbsp;<br>&nbsp;</p>
+</div>
+
+<!-- for items in database -->
+<!--       <br><br>
+      <h3>Posts:</h3>
+      {% for post in posts %}
+        <strong>Title:</strong> {{post.title}} <br>
+        <strong>Post:</strong> {{post.description}} <br>
+      <br>
+      {% endfor %} -->
+
+{% endblock %}

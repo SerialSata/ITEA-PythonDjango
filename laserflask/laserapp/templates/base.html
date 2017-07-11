@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+  <meta charset="utf-8">
+  <title>{{ title }}</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link href="{{ url_for('static', filename='css/bootstrap.min.css') }}" rel="stylesheet">
+  <link href="{{ url_for('static', filename='css/laserflask.css') }}" rel="stylesheet">
+  <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
+</head>
+
+<header>
+
+  <nav class="navbar navbar-default navbar-fixed-top" style="background: rgba(255, 255, 255, 0.9); ">
+    
+    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavbar">
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+    </button>
+   
+    <div class = "collapse navbar-collapse" id="myNavbar">
+
+      <div class="navbar-brand" style="margin-left: 3%;">
+        <a href="/welcome">
+          <img alt="Logo" src="{{ url_for('static', filename='abricate-logotype.png') }}" height="30">
+        </a>
+      </div>
+
+      <ul class="nav navbar-nav navbar-right" style="margin-right: 3%;">       
+          <li>
+              <a href="/upload/">
+                <button type="button" class="btn btn-success btn-sm" aria-label="Left Align">
+                  <span class="glyphicon glyphicon-download" aria-hidden="true"></span> Upload your data
+                </button>
+              </a>
+          </li>
+          <li>
+              <a href="/viewer/">
+                <button type="button" class="btn btn-success btn-sm" aria-label="Left Align">
+                  <span class="glyphicon glyphicon-play-circle" aria-hidden="true"></span> 3D Viewer
+                </button>
+              </a>
+          </li>
+          {% if session.logged_in==True %}
+          <li>
+              <a href="/logout/">
+                <button type="button" class="btn btn-success btn-sm" aria-label="Left Align">
+                  <span class="glyphicon glyphicon-log-in" aria-hidden="true"></span> Logout
+                </button>
+              </a>
+          </li>
+          {% else %}
+          <li>
+              <a href="/signup/">
+                <button type="button" class="btn btn-success btn-sm" aria-label="Left Align">
+                  <span class="glyphicon glyphicon-pencil" aria-hidden="true"></span> Sign up
+                </button>
+              </a>
+          </li>
+          <li>
+              <a href="/login/">
+                <button type="button" class="btn btn-success btn-sm" aria-label="Left Align">
+                  <span class="glyphicon glyphicon-log-in" aria-hidden="true"></span> Login
+                </button>
+              </a>
+          </li>
+          {% endif %}
+      </ul>
+
+    </div>
+
+  </nav>
+
+</header>
+
+<body>
+<div class="wrapper">
+  <br>
+
+  <!-- errors -->
+  {% if error %}
+
+    <div class="alert alert-danger alert-dismissible" role="alert">
+      <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>
+      <strong>Error:</strong> {{ error }}
+    </div>
+  {% endif %}
+
+  <!-- messages -->
+  {% with messages = get_flashed_messages() %}
+    {% if messages %}
+      {% for message in messages %}
+        <div class="alert alert-success alert-dismissible" role="alert"> <!-- danger -red, warning - yellow, success - green, info - blue -->
+          <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>
+          {{message}}
+        </div>
+      {% endfor %}
+    {% endif %}
+  {% endwith %}
+
+  {% block body %}
+
+  {% endblock %}
+
+</div>
+
+<script src="//code.jquery.com/jquery-1.12.1.min.js"></script>
+<script type="text/javascript" src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>
+
+</body>
+
+<footer class="page-footer">
+  <div class="container-fluid backpattern" >
+    <div class="row">
+      <a name="contact"></a>
+      <div class="col-md-3 col-md-offset-1 layer1">
+          <p style="color:#ffffff; font-size:35px; margin-top: 40px">CONTACT US<br /></p>
+          <p style="color:#7F7F7F; font-size:16px;">WE WANT TO BUILD THE RIGHT SOLUTION.</p>
+          <p style="color:#ffffff; font-size:16px;"><br />Every conversation helps us understand what we need to build. If you take the time to give us your thoughts, we'll take the time to reply.</p>
+      </div>
+      <div class="col-md-5 col-md-offset-3 layer1">
+        <form style="margin-top: 40px; margin-right: 100px">
+        <div class="form-group layer1">
+          <input type="name" class="form-control-custom" id="InputName1" placeholder="NAME?">
+        </div>
+
+        <div class="form-group layer1">
+          <input type="email" class="form-control-custom" id="InputEmail1" placeholder="EMAIL?">
+        </div>
+
+        <div class="form-group layer1">
+          <input type="tel" class="form-control-custom" id="InputEmail1" placeholder="PHONE NUMBER?">
+        </div>
+
+        <div class="form-group layer1">
+          <textarea class="form-control-custom" rows="5" placeholder="THE MESSAGE YOU WANT TO SEND US!"></textarea>
+        </div>
+
+        <button type="submit" class="btn btn-default layer1" style="margin-bottom: 40px;">SUBMIT MESSAGE</button>
+        </form>
+      </div>
+    </div>
+  </div> 
+
+  <div class="container-fluid" style="background: #111111;">
+    <div class="row">
+      <div class="col-md-2 col-md-offset-1">
+        <address style="color:#ffffff; font-size:16px; margin-top: 30px; margin-bottom: 30px;">
+        1960 Mandela Parkway<br>
+        Oakland, CA 94607
+        </address>
+      </div>
+      <div class="col-md-2 col-md-offset-5 footer-copyright">
+        <p style="color:#ffffff; font-size:16px; padding-top: 30px;">
+        Abricate Inc. | Copyright 2015
+        </p>
+      </div>
+    </div>
+  </div>
+  <div class="container-fluid" style="height: 20px; background: #ffffff;">
+    <p>&nbsp;</p>
+  </div>
+</footer>
+
+<!-- 
+
+
+<footer class="page-footer">
+  <div class="container-fluid">
+    <br><br>
+    <p class="contacts">Contact: admin@sflaser.com</p>
+    <p class="adress">1960 Mandela Parkway, Oakland, CA 94607</p>
+    <p class="legal">Legal information:</p>
+    <ul>
+      <li><a class="grey-text text-lighten-3" href="/about/tos/">Terms and Conditions</a></li>
+      <li><a class="grey-text text-lighten-3" href="/about/privacy-policy/">Privacy Policy</a></li>
+    </ul>
+  </div>
+
+  <div class="footer-copyright">
+    <div class="container-fluid">Abricate Inc. | Copyright 2016</div>
+  </div>
+</footer> -->
+
+</html>

@@ -8,3 +8,5 @@ DATABASES = {
         'NAME': os.path.join(BASE_DIR, 'db1.sqlite3'),
     }
 }
+
+LANGUAGE_CODE = 'uk-ua'

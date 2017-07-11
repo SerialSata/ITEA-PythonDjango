@@ -1,0 +1,116 @@
+{% extends "base.html" %}
+
+{% block body %}
+
+<div class="text-offset">
+  <h2>Hello, {{ session['username'] }}:</h2>
+
+  {% if session['username'] == 'Guest' %}
+    <p>In order to save your models, you must login. All anonymous file uploads will be discarded when you leave the page.</p>
+  {% endif %}
+</div>
+
+<div class="container-fluid"> 
+<div class="row">
+
+      <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
+
+        <div class="upload-page">
+          <p class="objects-margin">Please, select your drawing file to upload. Available filetypes .DWG .DXF .AI</p>
+            
+          <form role="form" action="{{ url_for('upload_file') }}" method="post" class="form-inline objects-margin" enctype="multipart/form-data">
+              <div class="form-group">
+                  <input type="file" class = "form-control" name="file">
+              </div>
+              <br><br>
+              <p class="objects-margin">Select material for your detail:</p>
+              <div id="material" class="btn-group objects-margin" data-toggle="buttons">
+                <label class="btn btn-success active" >
+                  <input type="radio" name="materials" id="metall" value="metall" autocomplete="off" checked> Metall
+                </label>
+                <label class="btn btn-success">
+                  <input type="radio" name="materials" id="wood" value="wood" autocomplete="off"> Wood
+                </label>
+                <label class="btn btn-success">
+                  <input type="radio" name="materials" id="acryl" value="acryl" autocomplete="off"> Acryl
+                </label>
+              </div>
+              <br>
+              <p class="objects-margin">Select desired thickness of detail:</p>
+              <div id="thickness" class="btn-group objects-margin" data-toggle="buttons">
+                <label class="btn btn-success active" >
+                  <input type="radio" name="thickness" id="1mm" value="1" autocomplete="off" checked> 1mm
+                </label>
+                <label class="btn btn-success">
+                  <input type="radio" name="thickness" id="3mm" value="3" autocomplete="off"> 3mm
+                </label>
+                <label class="btn btn-success">
+                  <input type="radio" name="thickness" id="6mm" value="6" autocomplete="off"> 6mm
+                </label>
+              </div>
+              <br>
+              <button type="submit" class="btn btn-default objects-margin">Upload</button>
+          </form>
+        </div>
+
+        {% if filename %}
+          <div class="upload-page">
+            <p><a href="{{ folder }}/{{ filename }}">Link for downloading your file: {{ filename }}</a></p>
+            <div class="spoiler">
+              <label>
+                <input type="checkbox"/>
+                <span class="btn btn-success">Geometry coordinates for <strong>{{ session['uploaded_filename'] }}</strong>:</span>
+                <div class="spoiler-text">
+                  <p>Lines: <br>{{diction['line']}}</p>
+                  <p>Circles: <br>{{diction['circle']}}</p>
+                  <p>2D polylines: <br>{{diction['lwpolyline']}}</p>
+                  <p>Arcs: <br>{{diction['arc']}}</p>
+                  <p>Ellipses: <br>{{diction['ellipse']}}</p>
+                  <p>Splines: <br>{{diction['spline']}}</p>
+                </div>
+              </label>
+            </div>
+          </div>
+        {% endif %}
+
+      </div>
+
+      <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
+
+        {% if filename %}
+          <div class="upload-page">
+            <p>Summary cutting length: {{diction['sum_length']}} mm</p>
+            <p>Material: {{material}}</p>
+            <p>Thickness: {{thickness}} mm</p>
+            <p><strong>Estimated price: {{price}} USD</strong></p>
+          </div>
+          
+            {% if filename.endswith('dwg') == True %}
+              <div class="upload-page">
+                <div class="aspect-ratio"> 
+                  <iframe src="//sharecad.org/cadframe/load?url=http://www.sflaser.com/{{ folder }}/{{ filename }}" scrolling="no"></iframe>
+                </div>
+              </div>
+            {% elif filename.endswith('ai') == True %}
+            <!-- .ai worked only with google account active on client pc -->
+              <div class="upload-page">
+                <div class="aspect-ratio">   
+                  <iframe src="http://docs.google.com/gview?url=http://www.sflaser.com/{{ folder }}/{{ filename }}&embedded=true" frameborder="0">
+                  </iframe>
+                </div>
+              </div>
+            {% elif filename.endswith('dxf') == True %}
+              <div class="upload-page">
+                <div class="aspect-ratio">
+                  <iframe src="//sharecad.org/cadframe/load?url=http://www.sflaser.com/{{ folder }}/{{ filename }}" scrolling="no"></iframe>
+                </div>
+              </div>
+            {% endif %}
+
+        {% endif %}
+
+      </div>
+</div>
+</div>
+
+{% endblock %}
