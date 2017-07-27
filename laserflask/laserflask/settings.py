@@ -38,6 +38,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'laserapp.apps.LaserappConfig',
+    'comments.apps.CommentsConfig',
+    'accounts.apps.AccountsConfig',
 ]
 
 MIDDLEWARE = [
