@@ -142,7 +142,9 @@
     <p>{{user}}, <a href="{% url 'logout' %}">Logout</a> </p>
 
 
-    {{comments_count}}
+    <p>{{comments_count}}</p>
+    <p>1 USD = {{rate}} UAH</p>
+
     <p>{% lorem 3 %}</p>
 
     {% for product in products %}
